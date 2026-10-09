@@ -11,7 +11,7 @@ namespace CodeChallenge.Data
     public class EmployeeDataSeeder
     {
         private EmployeeContext _employeeContext;
-        private const String EMPLOYEE_SEED_DATA_FILE = "resources/EmployeeSeedData.json";
+        private const string EmployeeSeedDataFile = "Resources/EmployeeSeedData.json";
 
         public EmployeeDataSeeder(EmployeeContext employeeContext)
         {
@@ -31,7 +31,7 @@ namespace CodeChallenge.Data
 
         private List<Employee> LoadEmployees()
         {
-            using (FileStream fs = new FileStream(EMPLOYEE_SEED_DATA_FILE, FileMode.Open))
+            using (FileStream fs = new FileStream(EmployeeSeedDataFile, FileMode.Open))
             using (StreamReader sr = new StreamReader(fs))
             using (JsonReader jr = new JsonTextReader(sr))
             {

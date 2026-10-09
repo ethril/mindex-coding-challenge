@@ -5,7 +5,7 @@ VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeChallenge", "CodeChallenge\CodeChallenge.csproj", "{8ABA1EEA-DF6D-43B9-9F23-4E8C234A5ABF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeChallenge.Tests.Integration", "CodeChallenge.Tests\CodeChallenge.Tests.Integration.csproj", "{0EFCF139-7A42-4E38-B638-856076B0108A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeChallenge.Tests.Integration", "CodeChallenge.Tests.Integration\CodeChallenge.Tests.Integration.csproj", "{0EFCF139-7A42-4E38-B638-856076B0108A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

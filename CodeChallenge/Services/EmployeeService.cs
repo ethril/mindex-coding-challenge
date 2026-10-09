@@ -32,7 +32,7 @@ namespace CodeChallenge.Services
 
         public Employee GetById(string id)
         {
-            if(!String.IsNullOrEmpty(id))
+            if(!string.IsNullOrEmpty(id))
             {
                 return _employeeRepository.GetById(id);
             }

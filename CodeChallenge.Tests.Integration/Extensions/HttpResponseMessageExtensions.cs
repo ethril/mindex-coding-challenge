@@ -2,7 +2,7 @@
 using System.IO;
 using System.Net.Http;
 
-namespace CodeCodeChallenge.Tests.Integration.Extensions
+namespace CodeChallenge.Tests.Integration.Extensions
 {
     public static class HttpResponseMessageExtensions
     {

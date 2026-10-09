@@ -2,15 +2,15 @@
 using System.IO;
 using Newtonsoft.Json;
 
-namespace CodeCodeChallenge.Tests.Integration.Helpers
+namespace CodeChallenge.Tests.Integration.Helpers
 {
     public class JsonSerialization
     {
         private JsonSerializer serializer = JsonSerializer.CreateDefault();
 
-        public String ToJson<T>(T obj)
+        public string ToJson<T>(T obj)
         {
-            String json = null;
+            string json = null;
 
             if (obj != null)
             {

@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc.Testing;
 
-namespace CodeCodeChallenge.Tests.Integration.Helpers
+namespace CodeChallenge.Tests.Integration.Helpers
 {
-    public class TestServer : IDisposable, IAsyncDisposable
+    public class ApiTestServer : IDisposable, IAsyncDisposable
     {
         private WebApplicationFactory<Program> applicationFactory;
 
-        public TestServer()
+        public ApiTestServer()
         {
             applicationFactory = new WebApplicationFactory<Program>();
         }

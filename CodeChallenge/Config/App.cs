@@ -5,7 +5,6 @@ using CodeChallenge.Repositories;
 using CodeChallenge.Services;
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -29,7 +28,7 @@ namespace CodeChallenge.Config
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                SeedEmployeeDB();
+                SeedEmployeeDB(app.Services);
             }
 
             app.UseAuthorization();
@@ -48,12 +47,17 @@ namespace CodeChallenge.Config
             services.AddControllers();
         }
 
-        private void SeedEmployeeDB()
+        private void SeedEmployeeDB(IServiceProvider services)
         {
+            // The starter built its own EmployeeContext here, hard-coded to the "EmployeeDB" database, so it could only
+            // seed that one database. I've opted to resolve the context from dependency injection instead, so the seed
+            // data goes wherever the registered context points, allowing a unique database for each integration test
+            // server. Without this, every test server shared the same seeded database.
+
+            using var scope = services.CreateScope();
             new EmployeeDataSeeder(
-                new EmployeeContext(
-                    new DbContextOptionsBuilder<EmployeeContext>().UseInMemoryDatabase("EmployeeDB").Options
-            )).Seed().Wait();
+                scope.ServiceProvider.GetRequiredService<EmployeeContext>()
+            ).Seed().Wait();
         }
     }
 }

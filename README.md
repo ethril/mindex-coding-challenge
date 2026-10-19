@@ -1,87 +1,90 @@
 # Mindex Coding Challenge
-## What's Provided
-A simple [.Net 6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) web application has been created and bootstrapped 
-with data. The application contains information about all employees at a company. On application start-up, an in-memory 
-database is bootstrapped with a serialized snapshot of the database. While the application runs, the data may be
-accessed and mutated in the database without impacting the snapshot.
+I’ve added verbose comments in this repo to document my thoughts and decisions. The original prompt was moved to [PROMPT.md](PROMPT.md).
 
-### How to Run
-You can run this by executing `dotnet run` on the command line or in [Visual Studio Community Edition](https://www.visualstudio.com/downloads/).
+## API Endpoints
+The API listens on `localhost:8080`. Every `{id}` in a URL is the employee's `employeeId`.
 
+### Employee (Provided)
 
-### How to Use
-The following endpoints are available to use:
-```
-* CREATE
-    * HTTP Method: POST 
-    * URL: localhost:8080/api/employee
-    * PAYLOAD: Employee
-    * RESPONSE: Employee
-* READ
-    * HTTP Method: GET 
-    * URL: localhost:8080/api/employee/{id}
-    * RESPONSE: Employee
-* UPDATE
-    * HTTP Method: PUT 
-    * URL: localhost:8080/api/employee/{id}
-    * PAYLOAD: Employee
-    * RESPONSE: Employee
-```
-The Employee has a JSON schema of:
-```json
-{
-  "type":"Employee",
-  "properties": {
-    "employeeId": {
-      "type": "string"
-    },
-    "firstName": {
-      "type": "string"
-    },
-    "lastName": {
-          "type": "string"
-    },
-    "position": {
-          "type": "string"
-    },
-    "department": {
-          "type": "string"
-    },
-    "directReports": {
-      "type": "array",
-      "items" : "string"
-    }
+- **CREATE** an employee
+  - `POST` `/api/employee`
+  - Payload: `Employee`
+  - Response: `Employee`
+
+  ```http
+  POST http://localhost:8080/api/employee
+  Content-Type: application/json
+
+  {
+    "firstName": "Wolfgang",
+    "lastName": "Mozart",
+    "position": "Composer",
+    "department": "Music"
   }
-}
-```
-For all endpoints that require an "id" in the URL, this is the "employeeId" field.
+  ```
+- **READ** an employee
+  - `GET` `/api/employee/{id}`
+  - Response: `Employee`
 
-## What to Implement
-Clone or download the repository, do not fork it.
+  ```http
+  GET http://localhost:8080/api/employee/16a596ae-edd3-4847-99fe-c4518e82c86f
+  ```
+- **UPDATE** an employee
+  - `PUT` `/api/employee/{id}`
+  - Payload: `Employee`
+  - Response: `Employee`
 
-### Task 1
-Create a new type, ReportingStructure, that has two properties: employee and numberOfReports.
+  ```http
+  PUT http://localhost:8080/api/employee/b7839309-3348-463b-a7e3-5de1c168beb3
+  Content-Type: application/json
 
-For the field "numberOfReports", this should equal the total number of reports under a given employee. The number of 
-reports is determined to be the number of directReports for an employee and all of their direct reports. For example, 
-given the following employee structure:
-```
-                    John Lennon
-                /               \
-         Paul McCartney         Ringo Starr
-                               /        \
-                          Pete Best     George Harrison
-```
-The numberOfReports for employee John Lennon (employeeId: 16a596ae-edd3-4847-99fe-c4518e82c86f) would be equal to 4. 
+  {
+    "employeeId": "b7839309-3348-463b-a7e3-5de1c168beb3",
+    "firstName": "Paul",
+    "lastName": "McCartney",
+    "position": "Developer II",
+    "department": "Engineering"
+  }
+  ```
 
-This new type should have a new REST endpoint created for it. This new endpoint should accept an employeeId and return 
-the fully filled out ReportingStructure for the specified employeeId. The values should be computed on the fly and will 
-not be persisted.
+### Employee Reporting Structure (Task 1)
 
-### Task 2
-Create a new type, Compensation. A Compensation has the following fields: employee, salary, and effectiveDate. Create 
-two new Compensation REST endpoints. One to create and one to read by employeeId. These should persist and query the 
-Compensation from the persistence layer.
+- **READ** an employee's reporting structure
+  - `GET` `/api/reportingStructure/{id}`
+  - Response: `ReportingStructure`
 
-## Delivery
-Please upload your results to a publicly accessible Git repo. Free ones are provided by Github and Bitbucket.
+  ```http
+  GET http://localhost:8080/api/reportingStructure/16a596ae-edd3-4847-99fe-c4518e82c86f
+  ```
+
+### Employee Compensation (Task 2)
+
+- **CREATE** a compensation for an employee
+  - `POST` `/api/compensation`
+  - Payload: `Compensation`
+  - Response: `Compensation`
+
+  ```http
+  POST http://localhost:8080/api/compensation
+  Content-Type: application/json
+
+  {
+    "employee": { "employeeId": "16a596ae-edd3-4847-99fe-c4518e82c86f" },
+    "salary": 125000,
+    "effectiveDate": "2026-01-01"
+  }
+  ```
+- **READ** the compensation in effect today
+  - `GET` `/api/compensation/{id}`
+  - Response: `Compensation`
+
+  ```http
+  GET http://localhost:8080/api/compensation/16a596ae-edd3-4847-99fe-c4518e82c86f
+  ```
+- **READ** the compensation in effect on a specific day
+  - `GET` `/api/compensation/{id}?asOf=YYYY-MM-DD`
+  - Response: `Compensation`
+
+  ```http
+  GET http://localhost:8080/api/compensation/16a596ae-edd3-4847-99fe-c4518e82c86f?asOf=2026-06-30
+  ```

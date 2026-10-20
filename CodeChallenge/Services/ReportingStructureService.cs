@@ -35,6 +35,10 @@ namespace CodeChallenge.Services
                 // cannot run SQL, so a recursive CTE isn't an option here. If it were SQL Server, I would consider one
                 // to load the whole subtree in a single round trip instead of one per employee, which also gives one
                 // consistent snapshot of the hierarchy.
+                //
+                // UPDATE: The repository now loads the hierarchy one level at a time, so it runs one query for the
+                // employee and one for each level of the subtree rather than one per employee, which is 4 queries
+                // instead of 6 for John Lennon.
                 var employee = _employeeRepository.GetByIdWithReportingHierarchy(employeeId);
                 if (employee != null)
                 {

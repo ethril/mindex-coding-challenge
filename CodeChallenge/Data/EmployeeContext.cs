@@ -5,6 +5,11 @@ namespace CodeChallenge.Data
 {
     public class EmployeeContext : DbContext
     {
+        /// <summary>
+        /// The name of the shadow property on Employee that holds the ID of the employee's manager.
+        /// </summary>
+        public const string ManagerIdProperty = "ManagerId";
+
         public EmployeeContext(DbContextOptions<EmployeeContext> options) : base(options)
         {
 
@@ -39,6 +44,21 @@ namespace CodeChallenge.Data
                     .HasForeignKey(compensation => compensation.EmployeeId)
                     .IsRequired()
                     .OnDelete(DeleteBehavior.ClientNoAction);
+            });
+
+            // Employee.DirectReports has no inverse navigation and no foreign key property, so by convention EF adds a
+            // shadow foreign key to Employee and names it EmployeeId1. EmployeeRepository now queries that column to
+            // load a reporting hierarchy one level at a time, so I configured the relationship here to give the column
+            // a name that says what it holds, rather than have the repository depend on a generated one. Nothing else
+            // about the relationship changes. ManagerId is still a shadow property, so it never appears in the JSON,
+            // and the relationship is still optional, because the employee at the top of a hierarchy has no manager,
+            // which also keeps the ClientSetNull delete behavior the convention gave it.
+
+            modelBuilder.Entity<Employee>(entity =>
+            {
+                entity.HasMany(employee => employee.DirectReports)
+                    .WithOne()
+                    .HasForeignKey(ManagerIdProperty);
             });
         }
     }

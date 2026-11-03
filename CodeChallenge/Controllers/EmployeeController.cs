@@ -54,9 +54,9 @@ namespace CodeChallenge.Controllers
             if (existingEmployee == null)
                 return NotFound();
 
-            _employeeService.Replace(existingEmployee, newEmployee);
+            var updatedEmployee = _employeeService.Replace(existingEmployee, newEmployee);
 
-            return Ok(newEmployee);
+            return Ok(updatedEmployee);
         }
     }
 }

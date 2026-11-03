@@ -29,10 +29,11 @@ namespace CodeChallenge.Data
             // employee can share a date. EmployeeId is part of the primary key, so it can never be null, and the
             // relationship to Employee is required. The IsRequired call is there to make that explicit to a reader. The
             // default delete behavior for a required relationship is Cascade, which means that if an Employee were
-            // removed in a context that also had its compensations loaded, EF would delete them too. That matters
-            // because PUT /api/employee/{id} replaces an employee by deleting the row and inserting a new one with the
-            // same ID, and the compensations should survive that and attach to the new row. So I set ClientNoAction,
-            // which tells EF to leave compensations alone when an employee is removed. If an employee delete endpoint
+            // removed in a context that also had its compensations loaded, EF would delete them too. I set
+            // ClientNoAction when PUT /api/employee/{id} still replaced an employee by deleting the row and inserting a
+            // new one with the same ID, so the compensations would survive that and attach to the new row. PUT now
+            // updates the row in place and never removes an employee, so nothing currently depends on this setting.
+            // It tells EF to leave compensations alone when an employee is removed. If an employee delete endpoint
             // is ever added, this setting would need to be revisited, either by deleting the compensations along with
             // the employee or by refusing the delete while any exist.
 

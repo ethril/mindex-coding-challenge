@@ -110,6 +110,44 @@ namespace CodeChallenge.Tests.Integration
             Assert.AreEqual(employee.LastName, newEmployee.LastName);
         }
 
+        /// <summary>
+        /// Verifies that a PUT keeps the employee in their manager's reporting structure. The manager link is the
+        /// shadow property ManagerId, which the body can't carry, and the starter's delete-and-reinsert PUT left it
+        /// null, so John Lennon dropped from 4 reports to 1 after Ringo Starr was updated.
+        /// </summary>
+        [TestMethod]
+        public void UpdateEmployee_KeepsManagerAndReports()
+        {
+            // Arrange
+            var johnLennonEmployeeId = "16a596ae-edd3-4847-99fe-c4518e82c86f";
+            var employee = new Employee()
+            {
+                EmployeeId = "03aa1462-ffa9-4978-901b-7c001562cf6f",
+                Department = "Engineering",
+                FirstName = "Ringo",
+                LastName = "Starr",
+                Position = "Developer VI",
+            };
+            var requestContent = new JsonSerialization().ToJson(employee);
+
+            // Execute
+            var putResponse = _httpClient.PutAsync($"api/employee/{employee.EmployeeId}",
+               new StringContent(requestContent, Encoding.UTF8, "application/json")).Result;
+            var johnResponse = _httpClient.GetAsync($"api/reportingStructure/{johnLennonEmployeeId}").Result;
+            var ringoResponse = _httpClient.GetAsync($"api/reportingStructure/{employee.EmployeeId}").Result;
+
+            // Assert
+            Assert.AreEqual(HttpStatusCode.OK, putResponse.StatusCode);
+            Assert.AreEqual(employee.Position, putResponse.DeserializeContent<Employee>().Position);
+
+            Assert.AreEqual(HttpStatusCode.OK, johnResponse.StatusCode);
+            Assert.AreEqual(4, johnResponse.DeserializeContent<ReportingStructure>().NumberOfReports,
+                "Ringo Starr should still report to John Lennon.");
+
+            Assert.AreEqual(HttpStatusCode.OK, ringoResponse.StatusCode);
+            Assert.AreEqual(2, ringoResponse.DeserializeContent<ReportingStructure>().NumberOfReports);
+        }
+
         [TestMethod]
         public void UpdateEmployee_Returns_NotFound()
         {

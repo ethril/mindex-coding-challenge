@@ -42,22 +42,25 @@ namespace CodeChallenge.Services
 
         public Employee Replace(Employee originalEmployee, Employee newEmployee)
         {
-            if(originalEmployee != null)
-            {
-                _employeeRepository.Remove(originalEmployee);
-                if (newEmployee != null)
-                {
-                    // ensure the original has been removed, otherwise EF will complain another entity w/ same id already exists
-                    _employeeRepository.SaveAsync().Wait();
+            // The starter replaced an employee by deleting the stored row and inserting the request body under the
+            // same ID. The manager link is the shadow property ManagerId, which the body can't carry, so the new row
+            // was inserted with no manager and the employee dropped out of their manager's reporting structure. I
+            // changed it to update the tracked row in place instead. GetById loads the original in this request's
+            // context, so copying the fields onto it and saving once sends a single UPDATE of the changed columns and
+            // never touches ManagerId, the employee's own reports, or their compensations. The body's EmployeeId and
+            // DirectReports are ignored, because the URL names the employee and moving people between managers isn't
+            // something this endpoint supports.
 
-                    _employeeRepository.Add(newEmployee);
-                    // overwrite the new id with previous employee id
-                    newEmployee.EmployeeId = originalEmployee.EmployeeId;
-                }
+            if(originalEmployee != null && newEmployee != null)
+            {
+                originalEmployee.FirstName = newEmployee.FirstName;
+                originalEmployee.LastName = newEmployee.LastName;
+                originalEmployee.Position = newEmployee.Position;
+                originalEmployee.Department = newEmployee.Department;
                 _employeeRepository.SaveAsync().Wait();
             }
 
-            return newEmployee;
+            return originalEmployee;
         }
     }
 }
